@@ -1,0 +1,10 @@
+-main Hako
+-lib abv
+-neko bin/hako.n
+
+--next
+-main Client
+-lib abv
+-neko bin/client.n
+
+

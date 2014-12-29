@@ -1,4 +1,6 @@
 hako
 ====
 
-Hako is haxe embedded web server
+Hako is [haxe](http://haxe.org) embedded web server
+
+**under development!**

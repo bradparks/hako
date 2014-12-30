@@ -13,6 +13,7 @@ Install the latest version of [Haxe](http://www.haxe.org/download).
     haxelib git abv https://github.com/tondy67/abv.git
     cd path/to/dev
     git clone https://github.com/tondy67/hako.git
+    cd hako
     haxe neko.hxml 
     neko bin/hako.n 
     firefox http://localhost:5000

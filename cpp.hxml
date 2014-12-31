@@ -1,9 +1,11 @@
 -main Hako
+-cp src
 -lib abv
 -cpp bin/cpp
 
 --next
 -main Client
+-cp src
 -lib abv
 -cpp bin/cpp
 

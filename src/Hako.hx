@@ -1,7 +1,7 @@
 package;
 
-import sys.FileSystem;
-import sys.io.File;
+///import sys.FileSystem;
+//import sys.io.File;
 import abv.AM;
 import abv.net.web.WebServer;
 import abv.net.web.WT;
@@ -18,7 +18,7 @@ class Hako extends AM{
 
 	public function new()
 	{
-		AM.verbose = 0;
+		AM.verbose = 1;
 		AM.useArgs = false;
 		super();
 		updateTime = 1;
@@ -26,9 +26,13 @@ class Hako extends AM{
 			"host" => "localhost",
 			"port" => "5000",
 			"root" => ".",
+// rewrite 'fs' to doc 'root'
 			"fs" => "/fs/",
-			"index" => "index.html,index.htm",
-			"threads" => "4"
+// Base64('$user:$password'), tondy:hako
+			"auth" => "Basic dG9uZHk6aGFrbw==",
+			"login" => "/login/",
+			"index" => "index.html, index.htm, index.hxs",
+			"threads" => "2"
 			];
 		var srv = new WebServer();
 		srv.config(cfg);
@@ -45,7 +49,7 @@ class Hako extends AM{
 		if(ctx["query"] == "/exit"){
 			exitTime = 1;
 		}else {
-			ctx["body"] = Date.now() + '<br><a href="/?d=${Std.random(10000)}">refresh</a><p><a href="/fs/">FS</a></p><p><a href="/exit">Exit</a></p>';
+			ctx["body"] = '<h2>${ctx["query"]}</h2>${Date.now()}<br><a href="/?d=${Std.random(10000)}">refresh</a><p><a href="/fs/">FS</a></p><p><a href="/exit">Exit</a></p>';
 		}
 		
 //		return WT.response(ctx);

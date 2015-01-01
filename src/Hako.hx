@@ -46,10 +46,10 @@ class Hako extends AM{
 	
 	function app(ctx:Map<String,String>)
 	{  
-		if(ctx["query"] == "/exit"){
+		if(ctx["request"] == "/exit"){
 			exitTime = 1;
 		}else {
-			ctx["body"] = '<h2>${ctx["query"]}</h2>${Date.now()}<br><a href="/?d=${Std.random(10000)}">refresh</a><p><a href="/fs/">FS</a></p><p><a href="/exit">Exit</a></p>';
+			ctx["body"] = '<h2>${ctx["request"]}</h2>${Date.now()}<br><a href="/?d=${Std.random(10000)}">refresh</a><p><a href="/fs/">FS</a></p><p><a href="/exit">Exit</a></p>';
 		}
 		
 //		return WT.response(ctx);

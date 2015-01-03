@@ -18,23 +18,24 @@ class Hako extends AM{
 
 	public function new()
 	{
-		AM.verbose = 1;
+		AM.verbose = 0;
 		AM.useArgs = false;
 		super();
 		updateTime = 1;
-		var cfg = [
+		var srv = new WebServer();
+		cfg = [
 			"host" => "localhost",
 			"port" => "5000",
 			"root" => ".",
-// rewrite 'fs' to doc 'root'
-			"fs" => "/fs/",
-// Base64('$user:$password'), tondy:hako
+// rewrite 'fs' to docs 'root'
+			"fs" => "/fs/", // fs=%2Ffs%2F&login=%2Flogin%2F
+// Base64('$user:$password')
 			"auth" => "Basic dG9uZHk6aGFrbw==",
 			"login" => "/login/",
 			"index" => "index.html, index.htm, index.hxs",
 			"threads" => "2"
-			];
-		var srv = new WebServer();
+		];
+ 
 		srv.config(cfg);
 		srv.app = app;
 		Thread.create(srv.start);
@@ -44,12 +45,27 @@ class Hako extends AM{
 		}
 	}// new()
 	
-	function app(ctx:Map<String,String>)
+	function app(ctx:Map<String,String>,form:Map<String,Array<String>>=null)
 	{  
+		ctx["mime"] = "";
+		var host = cfg["host"]+":"+cfg["port"];
+		var body = '<h2>${ctx["request"]}</h2>${Date.now()}<br><a href="/?d=${Std.random(10000)}">Refresh</a><p><a href="/fs/">FS</a></p><p><a href="/exit">Exit</a></p>';
+
 		if(ctx["request"] == "/exit"){
-			exitTime = 1;
+			ctx["body"] = '<center><h2>Stop Hako?</h2>[ <a href="/login/exit">Yes</a> ] ... [ <a href="/">No</a> ]<p>user: tondy<br>pass: hako</p></center>';
+		}else if(ctx["request"] == "/login/exit"){
+			trace(ctx["Referer"]);
+			if(ctx.exists("Referer") && ctx["Referer"] == 'http://$host/exit')exitTime = 1;
+			else{
+				ctx["status"] = "303";
+				ctx["path"] = "/";
+			}
+		}else if(ctx["request"] == "/upload"){
+			if(form != null){
+				
+			}else ctx["body"] = body;
 		}else {
-			ctx["body"] = '<h2>${ctx["request"]}</h2>${Date.now()}<br><a href="/?d=${Std.random(10000)}">refresh</a><p><a href="/fs/">FS</a></p><p><a href="/exit">Exit</a></p>';
+			ctx["body"] = body;
 		}
 		
 //		return WT.response(ctx);

@@ -1,6 +1,9 @@
 -main Hako
 -cp src
 -lib abv
+-lib hscript
+-D hscriptPos
+-D haxeJSON
 -cpp bin/cpp
 
 --next

@@ -4,6 +4,8 @@ import sys.io.File;
 import abv.AM;
 import abv.net.web.WebServer;
 import abv.net.web.WT;
+import abv.io.SH;
+
 #if neko
 import neko.vm.Thread;
 #else
@@ -32,12 +34,13 @@ class Hako extends AM{
 // haxe.crypto.Base64.encode(haxe.io.Bytes.ofString('user:pass'))
 			"auth" => "Basic dXNlcjpwYXNz",
 			"index" => "index.html, index.htm, index.hxs",
-			"threads" => "2"
+			"threads" => "4"
 		];
  
  		srv = new WebServer();
 		srv.config(cfg);
 		srv.app = app;
+		srv.hxs = hxs;
 		Thread.create(srv.start);
 
 		while(true){ 
@@ -45,18 +48,34 @@ class Hako extends AM{
 		}
 	}// new()
 	
+	function  hxs(path:String,ctx:Map<String,String>)
+	{ 
+		var body = '<h2>${ctx["request"]}</h2><p><a href="/">Home</a></p>';
+		ctx["mime"] = "htm";
+		var script = File.getContent(path);
+		if(script.good("err: no script")){
+			SH.output = "echo";
+			try{
+				SH.execute(script);
+				body = SH.output.substr(4);
+			} catch(m:Dynamic){
+				body = '<h2>Hscript error!</h2><pre>$m</pre>';
+			}
+		} 
+		ctx["body"] = WT.mkPage(body,"hxs");
+	}// hxs()
+		
 	function app(ctx:Map<String,String>,form:Map<String,String>=null)
 	{  
 		ctx["mime"] = "";
-		var host = cfg["host"]+":"+cfg["port"];
 		var body = '<h2>${ctx["request"]}</h2>${Date.now()}<br><a href="/?d=${Std.random(10000)}">Refresh</a><p><a href="/fs/">FS</a></p><p><a href="/exit">Exit</a></p>';
+		var host = cfg["host"]+":"+cfg["port"];
 		var s = "",t = "";
 		var tmp = "www/tmp/";
 		
 		if(ctx["request"] == "/exit"){
 			ctx["body"] = WT.mkPage('<center><h2>Stop Hako?</h2>[ <a href="/login/exit">Yes</a> ] ... [ <a href="/">No</a> ]<p>user: user<br>pass: pass</p></center>',"Exit");
 		}else if(ctx["request"] == "/login/exit"){
-			trace(ctx["Referer"]);
 			if(ctx.exists("Referer") && ctx["Referer"] == 'http://$host/exit')exitTime = 1;
 			else{
 				ctx["status"] = "303";

@@ -1,0 +1,25 @@
+var home = "<h2><a href='/'>Home</a></h2>";
+var bg = "<p>Това е hscript генерирана страница!</p>";
+var en = "<h2>This is a <a href='http://lib.haxe.org/p/hscript'>hscript</a> generated page!</h2>";
+print(home);
+print(en);
+print(bg);
+print("<p>Platform: "+uname() + "</p>");
+var sw = 5;
+switch(sw){
+	case 5: print("<p>switch: " + 5 +"</p>");
+}
+
+print("<strong>"+pwd()+"</strong><br>");
+var a = ls("."); 
+for(f in a)print(f+"<br>");
+
+print("<ul>");
+var i =0;
+while(i < 5){
+	print("<li>Line: "+i+"</li>");
+	i++;
+}
+print("</ul>");
+
+print("<strong><a href='/fs/www/hxs/test.hxs'>test.hxs</a></strong><br>");

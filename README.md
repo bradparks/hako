@@ -10,6 +10,7 @@ Installation
 
 Install the latest version of [Haxe](http://www.haxe.org/download).
 
+    haxelib install hscript
     haxelib git abv https://github.com/tondy67/abv.git
     cd path/to/dev
     git clone https://github.com/tondy67/hako.git

@@ -1,7 +1,6 @@
 package;
 
-///import sys.FileSystem;
-//import sys.io.File;
+import sys.io.File;
 import abv.AM;
 import abv.net.web.WebServer;
 import abv.net.web.WT;
@@ -16,26 +15,27 @@ using abv.CT;
 
 class Hako extends AM{
 
+	var srv:WebServer;
+
 	public function new()
-	{
+	{ 
 		AM.verbose = 0;
 		AM.useArgs = false;
 		super();
 		updateTime = 1;
-		var srv = new WebServer();
 		cfg = [
 			"host" => "localhost",
 			"port" => "5000",
 			"root" => ".",
-// rewrite 'fs' to docs 'root'
-			"fs" => "/fs/", // fs=%2Ffs%2F&login=%2Flogin%2F
-// Base64('$user:$password')
-			"auth" => "Basic dG9uZHk6aGFrbw==",
-			"login" => "/login/",
+// url rewrite 
+			"urls" => "fs=/fs/ & login=/login/",
+// haxe.crypto.Base64.encode(haxe.io.Bytes.ofString('user:pass'))
+			"auth" => "Basic dXNlcjpwYXNz",
 			"index" => "index.html, index.htm, index.hxs",
 			"threads" => "2"
 		];
  
+ 		srv = new WebServer();
 		srv.config(cfg);
 		srv.app = app;
 		Thread.create(srv.start);
@@ -45,14 +45,16 @@ class Hako extends AM{
 		}
 	}// new()
 	
-	function app(ctx:Map<String,String>,form:Map<String,Array<String>>=null)
+	function app(ctx:Map<String,String>,form:Map<String,String>=null)
 	{  
 		ctx["mime"] = "";
 		var host = cfg["host"]+":"+cfg["port"];
 		var body = '<h2>${ctx["request"]}</h2>${Date.now()}<br><a href="/?d=${Std.random(10000)}">Refresh</a><p><a href="/fs/">FS</a></p><p><a href="/exit">Exit</a></p>';
-
+		var s = "",t = "";
+		var tmp = "www/tmp/";
+		
 		if(ctx["request"] == "/exit"){
-			ctx["body"] = '<center><h2>Stop Hako?</h2>[ <a href="/login/exit">Yes</a> ] ... [ <a href="/">No</a> ]<p>user: tondy<br>pass: hako</p></center>';
+			ctx["body"] = WT.mkPage('<center><h2>Stop Hako?</h2>[ <a href="/login/exit">Yes</a> ] ... [ <a href="/">No</a> ]<p>user: user<br>pass: pass</p></center>',"Exit");
 		}else if(ctx["request"] == "/login/exit"){
 			trace(ctx["Referer"]);
 			if(ctx.exists("Referer") && ctx["Referer"] == 'http://$host/exit')exitTime = 1;
@@ -62,13 +64,22 @@ class Hako extends AM{
 			}
 		}else if(ctx["request"] == "/upload"){
 			if(form != null){
-				
-			}else ctx["body"] = body;
+				s += "<p>";
+				for(k in form.keys()){
+					if(form[k].startsWith("file:")){
+						t = form[k].substr(5);
+						var a = t.split("|||");
+						s += '$k: ${a[0]}<br>';
+						try File.saveContent(tmp+a[0],a[2])
+						catch(m:Dynamic){trace(m);}
+					}else s += '$k: ${form[k]}<br>';
+				}
+				s += "</p><p><strong>"+tmp+"</strong><br>" + WT.dirIndex(tmp,srv.urls["fs"],true) + "</p>";
+				ctx["body"] = WT.mkPage(s+body,"upload"); 
+			}else ctx["body"] = WT.mkPage(body,"upload");
 		}else {
-			ctx["body"] = body;
+			ctx["body"] = WT.mkPage(body);
 		}
-		
-//		return WT.response(ctx);
 	}// app();
 
 	override function update(delta:Null<Float> = null)

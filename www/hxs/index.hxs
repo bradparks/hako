@@ -1,7 +1,7 @@
-var home = "<h2><a href='/'>Home</a></h2>";
+var home = "<h2><a href='/'>Home</a> &gt <a href='/fs/www/hxs/haxelib.hxs'>Haxelib.hxs</a></h2>";
 var bg = "<p>Това е hscript генерирана страница!</p>";
 var en = "<h2>This is a <a href='http://lib.haxe.org/p/hscript'>hscript</a> generated page!</h2>";
-print(home);
+echo(home);
 print(en);
 print(bg);
 print("<p>Platform: "+uname() + "</p>");
@@ -14,12 +14,16 @@ print("<strong>"+pwd()+"</strong><br>");
 var a = ls("."); 
 for(f in a)print(f+"<br>");
 
-print("<ul>");
+print("<ol>");
 var i =0;
 while(i < 5){
 	print("<li>Line: "+i+"</li>");
 	i++;
 }
-print("</ul>");
+print("</ol>");
 
-print("<strong><a href='/fs/www/hxs/test.hxs'>test.hxs</a></strong><br>");
+
+var a = [0,1,2,3,4,5,6];
+print("<ul>");
+for(i in a)print("<li>"+i+"</li>");
+print("</ul>");
